@@ -1,0 +1,11 @@
+---
+- hosts: docker
+  become: true
+  tasks:
+  - name: Stop and remove running container
+    shell: docker rm -f lexus-app
+  - name: Remove existing image
+    shell: docker rmi lexus
+
+  - name: Start new container
+    shell: docker run -d --name lexus-app -p 8000:8080 kelafat007/lexus
