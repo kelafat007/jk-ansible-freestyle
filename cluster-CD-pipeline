@@ -1,0 +1,14 @@
+pipeline{
+    agent any
+    
+stages{
+    stage('Deploy To Container'){
+    steps{
+       sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '''ansible-playbook -i /opt/projects/hosts /opt/projects/k8s-deploy.yaml
+''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]) 
+    }
+    }
+
+
+    }
+}
