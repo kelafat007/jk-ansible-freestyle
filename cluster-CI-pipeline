@@ -1,0 +1,37 @@
+pipeline{
+    agent any
+    tools{
+        maven "maven"
+    }
+stages{
+    stage('1Gitclone'){
+    steps{
+        git 'https://github.com/kelafat007/jk-ansible-freestyle.git'
+    }
+    }
+
+    stage('2BuildArtifact'){
+     steps{
+        sh "mvn clean package"
+    }
+}
+
+   stage('3CopyArtifactToAnsible'){
+     steps{
+   sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '//opt//projects', remoteDirectorySDF: false, removePrefix: 'target', sourceFiles: 'target/*war'), sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '//opt//projects', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'Dockerfile')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+    }
+}
+
+    stage('4Build Image & push'){
+             steps{
+     sshPublisher(publishers: [sshPublisherDesc(configName: 'ansible', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '''cd /opt/projects
+docker build -t lexus .
+docker tag lexus kelafat007/lexus
+docker push kelafat007/lexus''', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+    }
+}
+
+   
+
+    }
+}
